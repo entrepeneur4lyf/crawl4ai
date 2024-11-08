@@ -12,19 +12,20 @@
 Crawl4AI simplifies asynchronous web crawling and data extraction, making it accessible for large language models (LLMs) and AI applications. 🆓🌐
 
 ## 🌟 Meet the Crawl4AI Assistant: Your Copilot for Crawling
+
 Use the [Crawl4AI GPT Assistant](https://tinyurl.com/crawl4ai-gpt) as your AI-powered copilot! With this assistant, you can:
+
 - 🧑‍💻 Generate code for complex crawling and extraction tasks
 - 💡 Get tailored support and examples
 - 📘 Learn Crawl4AI faster with step-by-step guidance
 
-## New in 0.3.72 ✨
+## New in 0.3.73 ✨
 
-- 📄 Fit markdown generation for extracting main article content.
-- 🪄 Magic mode for comprehensive anti-bot detection bypass.
-- 🌐 Enhanced multi-browser support with seamless switching (Chromium, Firefox, WebKit)
-- 📚 New chunking strategies(Sliding window, Overlapping window, Flexible size control)
-- 💾 Improved caching system for better performance
-- ⚡ Optimized batch processing with automatic rate limiting
+- 🐳 Docker Ready: Full API server with seamless deployment & scaling
+- 🎯 Browser Takeover: Use your own browser with cookies & history intact (CDP support)
+- 📝 Mockdown+: Enhanced tag preservation & content extraction
+- ⚡️ Parallel Power: Supercharged multi-URL crawling performance
+- 🌟 And many more exciting updates...
 
 ## Try it Now!
 
@@ -81,11 +82,13 @@ By default, this will install the asynchronous version of Crawl4AI, using Playwr
 👉 Note: When you install Crawl4AI, the setup script should automatically install and set up Playwright. However, if you encounter any Playwright-related errors, you can manually install it using one of these methods:
 
 1. Through the command line:
+
    ```bash
    playwright install
    ```
 
 2. If the above doesn't work, try this more specific command:
+
    ```bash
    python -m playwright install chromium
    ```
@@ -112,9 +115,53 @@ pip install -e .
 
 ### Using Docker 🐳
 
-We're in the process of creating Docker images and pushing them to Docker Hub. This will provide an easy way to run Crawl4AI in a containerized environment. Stay tuned for updates!
+Crawl4AI is available as Docker images for easy deployment. You can either pull directly from Docker Hub (recommended) or build from the repository.
 
-For more detailed installation instructions and options, please refer to our [Installation Guide](https://crawl4ai.com/mkdocs/installation).
+#### Option 1: Docker Hub (Recommended)
+
+```bash
+# Pull and run from Docker Hub (choose one):
+docker pull unclecode/crawl4ai:basic    # Basic crawling features
+docker pull unclecode/crawl4ai:all      # Full installation (ML, LLM support)
+docker pull unclecode/crawl4ai:gpu      # GPU-enabled version
+
+# Run the container
+docker run -p 11235:11235 unclecode/crawl4ai:basic  # Replace 'basic' with your chosen version
+```
+
+#### Option 2: Build from Repository
+
+```bash
+# Clone the repository
+git clone https://github.com/unclecode/crawl4ai.git
+cd crawl4ai
+
+# Build the image
+docker build -t crawl4ai:local \
+  --build-arg INSTALL_TYPE=basic \  # Options: basic, all
+  .
+
+# Run your local build
+docker run -p 11235:11235 crawl4ai:local
+```
+
+Quick test (works for both options):
+```python
+import requests
+
+# Submit a crawl job
+response = requests.post(
+    "http://localhost:11235/crawl",
+    json={"urls": "https://example.com", "priority": 10}
+)
+task_id = response.json()["task_id"]
+
+# Get results
+result = requests.get(f"http://localhost:11235/task/{task_id}")
+```
+
+For advanced configuration, environment variables, and usage examples, see our [Docker Deployment Guide](https://crawl4ai.com/mkdocs/basic/docker-deployment/).
+
 
 ## Quick Start 🚀
 
@@ -244,7 +291,7 @@ if __name__ == "__main__":
     asyncio.run(extract_news_teasers())
 ```
 
-For more advanced usage examples, check out our [Examples](https://crawl4ai.com/mkdocs/full_details/advanced_jsoncss_extraction.md) section in the documentation.
+For more advanced usage examples, check out our [Examples](https://crawl4ai.com/mkdocs/extraction/css-advanced/) section in the documentation.
 
 ### Extracting Structured Data with OpenAI
 
@@ -347,7 +394,8 @@ if __name__ == "__main__":
 
 This example demonstrates Crawl4AI's ability to handle complex scenarios where content is loaded asynchronously. It crawls multiple pages of GitHub commits, executing JavaScript to load new content and using custom hooks to ensure data is loaded before proceeding.
 
-For more advanced usage examples, check out our [Examples](https://crawl4ai.com/mkdocs/full_details/session_based_crawling.md) section in the documentation.
+For more advanced usage examples, check out our [Examples](https://crawl4ai.com/mkdocs/tutorial/episode_12_Session-Based_Crawling_for_Dynamic_Websites/) section in the documentation.
+</details>
 
 
 ## Speed Comparison 🚀
@@ -356,7 +404,7 @@ Crawl4AI is designed with speed as a primary focus. Our goal is to provide the f
 
 We've conducted a speed comparison between Crawl4AI and Firecrawl, a paid service. The results demonstrate Crawl4AI's superior performance:
 
-```
+```bash
 Firecrawl:
 Time taken: 7.02 seconds
 Content length: 42074 characters
@@ -374,6 +422,7 @@ Images found: 89
 ```
 
 As you can see, Crawl4AI outperforms Firecrawl significantly:
+
 - Simple crawl: Crawl4AI is over 4 times faster than Firecrawl.
 - With JavaScript execution: Even when executing JavaScript to load more content (doubling the number of images found), Crawl4AI is still faster than Firecrawl's simple crawl.
 
